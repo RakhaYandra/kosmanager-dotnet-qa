@@ -40,8 +40,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install pyyaml openpyxl
-      - run: npx --yes newman run api-src/KosManager.Api/api/postman_collection.json --env-var baseUrl=http://localhost:8090 --reporters cli,json --reporter-json-export reports/newman.json
-        working-directory: qa
+      - run: npx --yes newman run ${{ github.workspace }}/api-src/KosManager.Api/api/postman_collection.json --env-var baseUrl=http://localhost:8090 --reporters cli,json --reporter-json-export newman.json
+        working-directory: qa/reports
       - run: npm install --no-audit --no-fund && npx playwright test
         working-directory: qa/e2e
       - run: python3 tools/generate-report.py

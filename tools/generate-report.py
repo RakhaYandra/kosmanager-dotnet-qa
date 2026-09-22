@@ -1,10 +1,11 @@
 """Generate KosManager-QA-Report.xlsx dari testcases.yaml + newman.json + playwright.json."""
 import json
+import os
 import yaml
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 
-base = "/home/rakha/Work/kos/qa/repo"
+base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 cases = yaml.safe_load(open(f"{base}/data/testcases.yaml"))
 newman = json.load(open(f"{base}/reports/newman.json"))
 pw = json.load(open(f"{base}/reports/playwright.json"))
