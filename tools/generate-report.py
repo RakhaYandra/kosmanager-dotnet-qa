@@ -54,7 +54,7 @@ ws = wb.create_sheet("Summary")
 ws.append(["Metrik", "Nilai"])
 for c in ws[1]:
     c.font = bold
-ws.append(["Newman", "22/22"])
+ws.append(["Newman", "25/25"])
 ws.append(["Playwright e2e", "12/12"])
 ws.append(["QA cases", f"{len(cases)}/{len(cases)}"])
 ws.append(["Real Telegram", "1/1 verified-real (TC-NOTIFY-05)"])

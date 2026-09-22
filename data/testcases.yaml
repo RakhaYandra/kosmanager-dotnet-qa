@@ -234,3 +234,18 @@
   title: "Alur penghuni: login, bayar, pending, owner verify, paid"
   steps: Playwright API flow
   expected: status akhir paid
+- id: TC-BILL-09
+  area: bills
+  title: "Struk PDF valid + milik sendiri"
+  steps: GET /api/bills/4/receipt.pdf token owner
+  expected: 200 application/pdf, magic bytes %PDF
+- id: TC-BILL-10
+  area: bills
+  title: "Struk tagihan orang lain 403"
+  steps: GET /api/bills/5/receipt.pdf token sinta
+  expected: 403
+- id: TC-DASH-05
+  area: dashboard
+  title: "Tren kas 6 bulan konsisten"
+  steps: GET /api/dashboard/trend, bandingkan vs dashboard
+  expected: 6 points, kas periode berjalan cocok

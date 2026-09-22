@@ -1,7 +1,7 @@
 # kosmanager-dotnet-qa
 
-QA portfolio KosManager — test plan, 47 test cases 100% Pass, RBAC matrix,
-Newman 22/22, Playwright e2e 12/12, Excel report. 1 kasus verified-real
+QA portfolio KosManager — test plan, 50 test cases 100% Pass, RBAC matrix,
+Newman 25/25, Playwright e2e 12/12, Excel report. 1 kasus verified-real
 (Telegram terkirim ke HP).
 
 ## Purpose, Output & Expectations
@@ -9,8 +9,8 @@ Newman 22/22, Playwright e2e 12/12, Excel report. 1 kasus verified-real
 **Purpose.** Setiap klaim di CV/porto harus punya bukti yang bisa di-run ulang:
 kontrak API, matriks RBAC, reminder scheduler, dan 1 pengiriman Telegram asli.
 
-**Output.** `test-plan.md`, 47 cases YAML (`data/testcases.yaml`), suite Newman
-(22 requests), 12 API-flows Playwright, `KosManager-QA-Report.xlsx` (Cover,
+**Output.** `test-plan.md`, 50 cases YAML (`data/testcases.yaml`), suite Newman
+(25 requests), 12 API-flows Playwright, `KosManager-QA-Report.xlsx` (Cover,
 Cases, Execution Log, Bugs, Summary).
 
 **Expectations.** Clone → API demo up → `npm test` hijau tanpa edit;
@@ -20,8 +20,8 @@ setiap case tertelusur ke ID di YAML.
 
 | Suite | Hasil |
 |---|---|
-| QA cases | 47/47 Pass |
-| Newman | 22/22, 0 failed |
+| QA cases | 50/50 Pass |
+| Newman | 25/25, 0 failed |
 | Playwright e2e | 12/12 |
 | UI Playwright (web, 17/17 endpoint) | 9/9 aksi (CRUD, CSV up/down, register) |
 | Real Telegram | 1/1 verified-real (TC-NOTIFY-05) |
