@@ -23,6 +23,7 @@ setiap case tertelusur ke ID di YAML.
 | QA cases | 47/47 Pass |
 | Newman | 22/22, 0 failed |
 | Playwright e2e | 12/12 |
+| UI Playwright (web, 17/17 endpoint) | 9/9 aksi (CRUD, CSV up/down, register) |
 | Real Telegram | 1/1 verified-real (TC-NOTIFY-05) |
 | Bugs open | 0 (1 closed-by-design: kas Rp 0 saat tak ada paid) |
 
