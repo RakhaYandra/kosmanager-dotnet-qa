@@ -1,0 +1,236 @@
+# sumber kebenaran test cases (48 kasus). Format: id, area, title, steps, expected.
+- id: TC-AUTH-01
+  area: auth
+  title: Register role penghuni sukses + token kembali
+  steps: POST /api/auth/register {email unik, password}
+  expected: 200 + body.token non-empty
+- id: TC-AUTH-02
+  area: auth
+  title: Register role selain penghuni ditolak
+  steps: POST /api/auth/register {role owner}
+  expected: 400 role must be penghuni
+- id: TC-AUTH-03
+  area: auth
+  title: Register email duplikat konflik
+  steps: POST /api/auth/register 2x email sama
+  expected: 409 email taken
+- id: TC-AUTH-04
+  area: auth
+  title: Login owner sukses
+  steps: POST /api/auth/login owner@kos.local
+  expected: 200 + token
+- id: TC-AUTH-05
+  area: auth
+  title: Login password salah 401
+  steps: POST /api/auth/login password salah
+  expected: 401
+- id: TC-AUTH-06
+  area: auth
+  title: GET /me tanpa token 401, dengan token 200
+  steps: GET /api/auth/me anon + owner
+  expected: 401 lalu 200 {id,email,role}
+- id: TC-ROOM-01
+  area: rooms
+  title: List kamar + nama penghuni (owner)
+  steps: GET /api/rooms token owner
+  expected: 200 array, tiap item ada number + status
+- id: TC-ROOM-02
+  area: rooms
+  title: List kamar bisa dibaca penghuni
+  steps: GET /api/rooms token penghuni
+  expected: 200
+- id: TC-ROOM-03
+  area: rooms
+  title: List kamar tanpa token 401
+  steps: GET /api/rooms anon
+  expected: 401
+- id: TC-ROOM-04
+  area: rooms
+  title: Create kamar sukses
+  steps: POST /api/rooms {number unik}
+  expected: 201 + id
+- id: TC-ROOM-05
+  area: rooms
+  title: Update kamar sukses
+  steps: PUT /api/rooms/{id}
+  expected: 200 + field berubah
+- id: TC-ROOM-06
+  area: rooms
+  title: Delete kamar sukses + get lagi 404
+  steps: DELETE lalu PUT id sama
+  expected: 204 lalu 404
+- id: TC-ROOM-07
+  area: rooms
+  title: Penghuni create kamar 403
+  steps: POST /api/rooms token penghuni
+  expected: 403
+- id: TC-TEN-01
+  area: tenants
+  title: List penghuni + kamar
+  steps: GET /api/tenants token owner
+  expected: 200 array >= 5
+- id: TC-TEN-02
+  area: tenants
+  title: Create penghuni + kamar jadi isi
+  steps: POST /api/tenants {roomId kosong} lalu GET room
+  expected: 201, room.status isi
+- id: TC-TEN-03
+  area: tenants
+  title: Update penghuni sukses
+  steps: PUT /api/tenants/{id}
+  expected: 200
+- id: TC-TEN-04
+  area: tenants
+  title: Delete penghuni sukses
+  steps: DELETE /api/tenants/{id}
+  expected: 204
+- id: TC-TEN-05
+  area: tenants
+  title: Import CSV sukses + hitung gagal
+  steps: POST /api/tenants/import file csv 3 baris (1 rusak)
+  expected: 200 {imported 2, failed 1}
+- id: TC-TEN-06
+  area: tenants
+  title: Import file >2MB ditolak
+  steps: POST import file besar
+  expected: 400
+- id: TC-TEN-07
+  area: tenants
+  title: Penghuni list tenants 403
+  steps: GET /api/tenants token penghuni
+  expected: 403
+- id: TC-BILL-01
+  area: bills
+  title: Owner list semua tagihan
+  steps: GET /api/bills token owner
+  expected: 200 + field daysLate ada
+- id: TC-BILL-02
+  area: bills
+  title: Penghuni hanya lihat miliknya
+  steps: GET /api/bills token sinta
+  expected: semua tenant == Sinta Prabowo
+- id: TC-BILL-03
+  area: bills
+  title: Filter status unpaid
+  steps: GET /api/bills?status=unpaid
+  expected: semua status unpaid
+- id: TC-BILL-04
+  area: bills
+  title: Generate periode baru
+  steps: POST /api/bills/generate?periode=2099-01
+  expected: 200 generated >= 1
+- id: TC-BILL-05
+  area: bills
+  title: Generate idempoten (periode sama 2x)
+  steps: POST generate 2x periode sama
+  expected: generate kedua == 0
+- id: TC-BILL-06
+  area: bills
+  title: Generate format salah 400
+  steps: POST generate?periode=salah
+  expected: 400
+- id: TC-BILL-07
+  area: bills
+  title: Penghuni generate 403
+  steps: POST generate token penghuni
+  expected: 403
+- id: TC-BILL-08
+  area: bills
+  title: Generate tanpa token 401
+  steps: POST generate anon
+  expected: 401
+- id: TC-PAY-01
+  area: payments
+  title: Penghuni bayar tagihan sendiri → pending
+  steps: POST /api/payments {billId miliknya}
+  expected: 201, bill jadi pending
+- id: TC-PAY-02
+  area: payments
+  title: Penghuni bayar tagihan orang lain 403
+  steps: POST /api/payments {billId orang}
+  expected: 403
+- id: TC-PAY-03
+  area: payments
+  title: Bayar tagihan tidak ada 404
+  steps: POST /api/payments {billId 999999}
+  expected: 404
+- id: TC-PAY-04
+  area: payments
+  title: Queue verifikasi hanya owner
+  steps: GET /api/payments/queue owner vs penghuni
+  expected: 200 vs 403
+- id: TC-PAY-05
+  area: payments
+  title: Verify setuju → paid
+  steps: POST /api/payments/{id}/verify {approve true}
+  expected: 200 verified true, bill paid
+- id: TC-PAY-06
+  area: payments
+  title: Verify tolak → unpaid
+  steps: POST verify {approve false}
+  expected: bill unpaid
+- id: TC-DASH-01
+  area: dashboard
+  title: Dashboard lengkap
+  steps: GET /api/dashboard token owner
+  expected: occupancy, kas, tunggakan, overdue[], reminders
+- id: TC-DASH-02
+  area: dashboard
+  title: Dashboard penghuni 403, anon 401
+  steps: GET /api/dashboard 2 token
+  expected: 403 dan 401
+- id: TC-DASH-03
+  area: dashboard
+  title: Report CSV terunduh
+  steps: GET /api/dashboard/report.csv
+  expected: 200 text/csv header penghuni,periode
+- id: TC-DASH-04
+  area: dashboard
+  title: Overdue terurut hari telat desc
+  steps: GET /api/dashboard, cek overdue
+  expected: daysLate menurun
+- id: TC-NOTIFY-01
+  area: notify
+  title: Test-kirim mock sukses
+  steps: POST /api/notify/test channel mock
+  expected: "{channel mock, sent true}"
+- id: TC-NOTIFY-02
+  area: notify
+  title: Test-kirim penghuni 403
+  steps: POST /api/notify/test token penghuni
+  expected: 403
+- id: TC-NOTIFY-03
+  area: notify
+  title: Sweep idempoten (stage tidak mundur)
+  steps: panggil sweep logika 2x via test-kirim berulang
+  expected: tidak ada duplikat stage
+- id: TC-NOTIFY-04
+  area: notify
+  title: Tagihan tanpa chat_id di-skip
+  steps: sweep dengan tenant tanpa telegram
+  expected: skip, tanpa error
+- id: TC-NOTIFY-05
+  area: notify
+  title: REAL Telegram terkirim ke HP (verified-real)
+  steps: API mode telegram + POST /api/notify/test ke chat sendiri
+  expected: pesan masuk HP, channel telegram sent true
+- id: TC-SEC-01
+  area: security
+  title: Token repo bersih dari secret
+  steps: grep token/chat_id/password di repo (di luar seed fiktif)
+  expected: nol temuan
+- id: TC-SEC-02
+  area: security
+  title: Password tidak plaintext di DB
+  steps: SELECT PasswordHash users
+  expected: hash $2b$, bukan plaintext
+- id: TC-E2E-01
+  area: e2e
+  title: "Alur owner: login, generate, dashboard berubah"
+  steps: Playwright API flow
+  expected: generated > 0, kas/tunggakan konsisten
+- id: TC-E2E-02
+  area: e2e
+  title: "Alur penghuni: login, bayar, pending, owner verify, paid"
+  steps: Playwright API flow
+  expected: status akhir paid

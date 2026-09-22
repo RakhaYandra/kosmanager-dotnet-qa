@@ -1,0 +1,48 @@
+name: qa
+on: [push, pull_request]
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: kosmanager
+          MYSQL_USER: kos
+          MYSQL_PASSWORD: kospass
+        ports: ["3308:3306"]
+        options: --health-cmd="mysqladmin ping -h localhost" --health-interval=5s --health-timeout=3s --health-retries=20
+    env:
+      DB_CONN: "server=127.0.0.1;port=3308;database=kosmanager;user=kos;password=kospass"
+      JWT_SECRET: "ci-secret-minimal-32-karakter-aman"
+      NOTIFY_CHANNEL: mock
+    steps:
+      - uses: actions/checkout@v4
+        with: { repository: RakhaYandra/kosmanager-dotnet, path: api-src }
+      - uses: actions/checkout@v4
+        with: { path: qa }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "8.0.x" }
+      - run: dotnet tool install -g dotnet-ef --version 8.0.13
+      - run: dotnet ef database update --project KosManager.Infrastructure --startup-project KosManager.Api
+        working-directory: api-src
+      - run: mysql -h127.0.0.1 -P3308 -ukos -pkospass kosmanager < KosManager.Api/seed/seed.sql
+        working-directory: api-src
+      - run: dotnet build KosManager.Api
+        working-directory: api-src
+      - run: dotnet KosManager.Api/bin/Debug/net8.0/KosManager.Api.dll --urls http://localhost:8090 &
+        working-directory: api-src
+      - run: |
+          for i in $(seq 1 20); do curl -sf http://localhost:8090/healthz && break || sleep 5; done
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pyyaml openpyxl
+      - run: npx --yes newman run api-src/KosManager.Api/api/postman_collection.json --env-var baseUrl=http://localhost:8090 --reporters cli,json --reporter-json-export reports/newman.json
+        working-directory: qa
+      - run: npm install --no-audit --no-fund && npx playwright test
+        working-directory: qa/e2e
+      - run: python3 tools/generate-report.py
+        working-directory: qa
