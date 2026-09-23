@@ -249,3 +249,23 @@
   title: "Tren kas 6 bulan konsisten"
   steps: GET /api/dashboard/trend, bandingkan vs dashboard
   expected: 6 points, kas periode berjalan cocok
+- id: TC-NTF-06
+  area: notify
+  title: "Polling /start tautkan chat_id"
+  steps: fake updates /start sinta@kos.local, tunggu sweep
+  expected: tenant.TelegramChatId terisi, offset maju
+- id: TC-NTF-07
+  area: notify
+  title: "Polling SUDAH buat pending payment"
+  steps: fake updates SUDAH setelah taut
+  expected: 1 payment pending untuk tagihan unpaid terbaru
+- id: TC-NTF-08
+  area: notify
+  title: "Redelivery idempoten"
+  steps: reset offset, sweep ulang
+  expected: payment tetap 1, tanpa duplikat
+- id: TC-NTF-09
+  area: notify
+  title: "Email tak dikenal dibalas instruksi"
+  steps: fake /start asing@example.com
+  expected: tanpa perubahan DB
