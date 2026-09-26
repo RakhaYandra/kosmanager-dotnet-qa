@@ -9,16 +9,17 @@ jobs:
       mysql:
         image: mysql:8.4
         env:
-          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
           MYSQL_DATABASE: kosmanager
           MYSQL_USER: kos
           MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
         ports: ["3308:3306"]
         options: --health-cmd="mysqladmin ping -h localhost" --health-interval=5s --health-timeout=3s --health-retries=20
     env:
-      MYSQL_PASSWORD: kospass
+      MYSQL_PASSWORD: ci-dummy-password
+      MYSQL_ROOT_PASSWORD: ci-dummy-root
       DB_CONN: "server=127.0.0.1;port=3308;database=kosmanager;user=kos;password=${{ env.MYSQL_PASSWORD }}"
-      JWT_SECRET: "ci-secret-minimal-32-karakter-aman"
+      JWT_SECRET: "ci-dummy-min-32-karakter-aman"
       NOTIFY_CHANNEL: mock
       EXPECTED_REQUESTS: "25"
     steps:
