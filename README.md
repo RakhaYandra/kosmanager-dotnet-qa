@@ -22,14 +22,20 @@ setiap case tertelusur ke ID di YAML.
 
 ## Metrik
 
-| Suite | Hasil |
-|---|---|
-| QA cases | 54/54 Pass |
-| Newman | 25/25, 0 failed |
-| Playwright e2e | 12/12 |
-| UI Playwright (web, 17/17 endpoint) | 9/9 aksi (CRUD, CSV up/down, register) |
-| Real Telegram | 1/1 verified-real (TC-NOTIFY-05) |
-| Bugs open | 0 (1 closed-by-design: kas Rp 0 saat tak ada paid) |
+Angka di tabel ini adalah **sumber kebenaran** seluruh ekosistem. Repo lain
+(`api`, `ops`, `docs`) mengutip dari sini, bukan sebaliknya — jangan tambah
+salinan angka di repo lain, cepat saja akan basi.
+
+| Suite | Hasil | Diverifikasi oleh |
+|---|---|---|
+| QA cases | 54/54 Pass | `data/testcases.yaml` (54 ID unik) |
+| Newman | 25/25, 0 failed | CI gate `qa.yml` (assert total == 25) |
+| Playwright e2e | 12/12 | `e2e/tests/flows.spec.ts` (12 test) |
+| Real Telegram | 1/1 verified-real (TC-NOTIFY-05) | manual, env terisolasi |
+| Bugs open | 0 (1 closed-by-design: kas Rp 0 saat tak ada paid) | — |
+
+Tidak ada metrik UI Playwright: repo ini tidak punya file test UI, jadi angka
+sebelumnya ("9/9 aksi") dihapus — tidak ada buktinya di mana pun.
 
 ## RBAC matrix
 
@@ -37,16 +43,20 @@ Lihat `test-plan.md` (tabel owner/penghuni/anon per aksi).
 
 ## Hasil (run 2026-09-22, env terisolasi)
 
-Newman 25/25 (0 failed) · Playwright 12/12 · QA 50/50 · UI 9/9 ·
-Telegram real 1/1 · DB: MySQL 8.4 scratch + seed fiktif.
+Newman 25/25 (0 failed) · Playwright 12/12 · QA 54/54 · Telegram real 1/1 ·
+DB: MySQL 8.4 scratch + seed fiktif.
+
+Report run (newman.json, playwright.json, Excel) **tidak di-commit** — di-publish
+sebagai CI artifact `qa-reports` (retensi 30 hari) supaya tidak ada token yang
+terbaca di riwayat git. Unduh dari tab Artifacts pada run CI.
 
 ## Struktur
 
 ```
 test-plan.md            # strategi + matriks RBAC + kriteria lolos
-data/testcases.yaml     # 50 cases (sumber kebenaran)
+data/testcases.yaml     # 54 cases (sumber kebenaran)
 e2e/tests/flows.spec.ts # 12 API-flows Playwright
-reports/                # newman.json, playwright.json, KosManager-QA-Report.xlsx
+reports/                # output — di-generate, di-ignore, dipublish sbg artifact
 tools/generate-report.py# YAML+JSON -> Excel 5-sheet
 ```
 
@@ -60,7 +70,9 @@ Blazor prerender-vs-session, MudDrawer overlay — lihat runbook `-ops`.
 
 ```bash
 # API harus jalan + seed (lihat kosmanager-dotnet)
-npx --yes newman run ../api/postman_collection.json --env-var baseUrl=http://localhost:8090
+git clone https://github.com/RakhaYandra/kosmanager-dotnet.git
+npx --yes newman run kosmanager-dotnet/KosManager.Api/api/postman_collection.json \
+  --env-var baseUrl=http://localhost:8090
 cd e2e && npm install && npx playwright test
-python3 tools/generate-report.py
+cd .. && python3 tools/generate-report.py
 ```
