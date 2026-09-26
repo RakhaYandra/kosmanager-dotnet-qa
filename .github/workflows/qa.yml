@@ -64,6 +64,7 @@ jobs:
           [ "$failed" -eq 0 ] || { echo "::error::$failed request(s) failed"; exit 1; }
           [ "$total" -eq "$EXPECTED_REQUESTS" ] || {
             echo "::error::collection punya $total request, README mengklaim $EXPECTED_REQUESTS — sinkronkan README atau collection"; exit 1; }
+        working-directory: qa
       - run: npm install --no-audit --no-fund && npx playwright test
         working-directory: qa/e2e
       - run: python3 tools/generate-report.py
