@@ -1,4 +1,29 @@
+# Report QA — di-generate, di-publish sebagai CI artifact
+reports/
+*.xlsx
+newman*.json
+playwright*.json
+blob-report/
+allure-results/
+
+# Dependensi & cache
 node_modules/
-playwright-report/
 test-results/
+playwright-report/
 __pycache__/
+.venv/
+venv/
+
+# Env lokal
+.env
+.env.*
+!.env.example
+
+# Report tambahan
+coverage/
+coverage*.xml
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
