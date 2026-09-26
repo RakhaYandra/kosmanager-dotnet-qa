@@ -33,3 +33,15 @@ API `:8090`, channel default `mock`. Akun: `owner@kos.local`, `sinta@kos.local`.
 
 Newman 25/25 · QA cases 54/54 Pass · e2e Playwright 12/12 · 1 bug policy:
 temuan real (bukan seed) wajib repro + severity.
+
+## Troubleshooting suite
+
+Entri ini sebelumnya berada di runbook `-ops`; dipindah ke sini karena
+keduanya masalah layer QA, bukan operasi.
+
+| Gejala | Penyebab | Fix |
+|---|---|---|
+| Newman 401 massal | DB direset, token basi | login ulang tiap run (token tidak disimpan antar-run) |
+| Playwright flaky tanggal | tanggal hardcode basi | pakai periode dinamis (mis. 2099-11) |
+| Order-dependent test | test berbagi shared DB tanpa reset | reset fixture per-test; jangan andalkan urutan |
+| 409/404 saat run ulang | data sudah ada dari run sebelumnya | jalankan ulang dari DB bersih (seed ulang) |
