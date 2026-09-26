@@ -31,5 +31,5 @@ API `:8090`, channel default `mock`. Akun: `owner@kos.local`, `sinta@kos.local`.
 
 ## Kriteria lolos
 
-Newman 25/25 · QA cases 50/50 Pass · e2e Playwright 12/12 · 1 bug policy:
+Newman 25/25 · QA cases 54/54 Pass · e2e Playwright 12/12 · 1 bug policy:
 temuan real (bukan seed) wajib repro + severity.
