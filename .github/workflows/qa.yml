@@ -18,8 +18,7 @@ jobs:
     env:
       MYSQL_PASSWORD: ci-dummy-password
       MYSQL_ROOT_PASSWORD: ci-dummy-root
-      DB_CONN: "server=127.0.0.1;port=3308;database=kosmanager;user=kos;password=${{ env.MYSQL_PASSWORD }}"
-      JWT_SECRET: "ci-dummy-min-32-karakter-aman"
+      JWT_SECRET: "ci-dummy-secret-min-32-karakter-aman"
       NOTIFY_CHANNEL: mock
       EXPECTED_REQUESTS: "25"
     steps:
@@ -32,12 +31,16 @@ jobs:
       - run: dotnet tool install -g dotnet-ef --version 8.0.13
       - run: dotnet ef database update --project KosManager.Infrastructure --startup-project KosManager.Api
         working-directory: api-src
+        env:
+          DB_CONN: "server=127.0.0.1;port=3308;database=kosmanager;user=kos;password=${{ env.MYSQL_PASSWORD }}"
       - run: mysql -h127.0.0.1 -P3308 -ukos -p"$MYSQL_PASSWORD" kosmanager < KosManager.Api/seed/seed.sql
         working-directory: api-src
       - run: dotnet build KosManager.Api
         working-directory: api-src
       - run: dotnet KosManager.Api/bin/Debug/net8.0/KosManager.Api.dll --urls http://localhost:8090 &
         working-directory: api-src
+        env:
+          DB_CONN: "server=127.0.0.1;port=3308;database=kosmanager;user=kos;password=${{ env.MYSQL_PASSWORD }}"
       - run: |
           for i in $(seq 1 20); do curl -sf http://localhost:8090/healthz && break || sleep 5; done
       - uses: actions/setup-node@v4
