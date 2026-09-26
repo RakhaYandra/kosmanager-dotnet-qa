@@ -48,6 +48,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install pyyaml openpyxl
+      # reports/ is gitignored, so it does not exist in a fresh checkout.
+      - run: mkdir -p reports
       - run: npx --yes newman run ${{ github.workspace }}/api-src/KosManager.Api/api/postman_collection.json --env-var baseUrl=http://localhost:8090 --reporters cli,json --reporter-json-export newman.json
         working-directory: qa/reports
       # Gate: klaim "25/25" di README harus selalu punya bukti di run ini.
